@@ -50,6 +50,7 @@ public class Worker implements Runnable {
     private static final String CONF = "config";
     private static final String REV_PARSE = "rev-parse";
     private static final String SUBMODULE = "submodule";
+    private final Object lockObj = new Object();
 
     public Worker(Config config, RepositoryConfig repositoryConfig, boolean cloneIfNotExists, boolean updateExisting) {
         this.config = config;
@@ -419,7 +420,7 @@ public class Worker implements Runnable {
     }
 
     private void updateStats(Stats stats, char status) {
-        synchronized (stats) {
+        synchronized (lockObj) {
             switch (status) {
                 case 'M':
                     stats.modified++;
@@ -565,15 +566,11 @@ public class Worker implements Runnable {
         }
     }
 
-    private String git(List<String> arguments) throws GitProcessException {
-        return git(repositoryConfig.getDirectory(), arguments);
-    }
-
     private String git(String... arguments) throws GitProcessException {
         return git(repositoryConfig.getDirectory(), arguments);
     }
 
-    private String git(File directory, List<String> arguments) throws GitProcessException {
+    private String git(List<String> arguments) throws GitProcessException {
         return git(arguments.toArray(new String[arguments.size()]));
     }
 
