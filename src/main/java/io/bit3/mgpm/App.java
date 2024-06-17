@@ -1,5 +1,10 @@
 package io.bit3.mgpm;
 
+import java.io.FileNotFoundException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.bit3.mgpm.cli.AnsiOutput;
 import io.bit3.mgpm.cli.CliApplication;
 import io.bit3.mgpm.cmd.Args;
@@ -8,11 +13,6 @@ import io.bit3.mgpm.cmd.LogLevel;
 import io.bit3.mgpm.config.Config;
 import io.bit3.mgpm.config.ConfigLoader;
 import io.bit3.mgpm.gui.GuiApplication;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.FileNotFoundException;
 
 public class App {
   private static final Logger logger = LoggerFactory.getLogger(App.class);
@@ -92,13 +92,14 @@ public class App {
     }
 
     @Override
-    public void run() {
+    public void run () {
       while (running) {
         output.rotateSpinner();
         try {
           Thread.sleep(200);
         } catch (InterruptedException e) {
           logger.error(e.getMessage(), e);
+          Thread.currentThread().interrupt();
         }
       }
     }
