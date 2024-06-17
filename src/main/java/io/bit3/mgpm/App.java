@@ -14,7 +14,7 @@ import io.bit3.mgpm.config.Config;
 import io.bit3.mgpm.config.ConfigLoader;
 import io.bit3.mgpm.gui.GuiApplication;
 
-public class App {
+public final class App {
   private static final Logger logger = LoggerFactory.getLogger(App.class);
   private final ConfigLoader loader;
   private final Args args;

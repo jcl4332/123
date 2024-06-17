@@ -2,6 +2,8 @@ package io.bit3.mgpm.worker;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -574,53 +576,58 @@ public class Worker implements Runnable {
         return git(arguments.toArray(new String[arguments.size()]));
     }
 
+    
     private String git(File directory, String... arguments) throws GitProcessException {
         List<String> command = new LinkedList<>();
         command.add(config.getGitConfig().getBinary());
         command.addAll(Arrays.asList(arguments));
-
+        
         logger.debug("[{}] > {}", directory, String.join(" ", command));
 
         try {
             Process process = new ProcessBuilder()
-                    .directory(directory)
-                    .command(command)
-                    .start();
+            .directory(directory)
+            .command(command)
+            .start();
             process.getOutputStream().close();
             int exitCode = process.waitFor();
-
+            
             if (0 != exitCode) {
-                String error = IOUtils.toString(process.getErrorStream()).trim();
-
+                String error = readStream(process.getErrorStream()).trim();
+                
                 if (StringUtils.isEmpty(error)) {
-                    error = IOUtils.toString(process.getInputStream()).trim();
+                    error = readStream(process.getInputStream()).trim();
                 }
-
+                
                 String message = String.format(
-                        "execution of \"%s\" in \"%s\" failed with exit code %d: %s",
-                        String.join(" ", command),
-                        directory.getAbsolutePath(),
-                        exitCode,
-                        error
-                );
+                    "execution of \"%s\" in \"%s\" failed with exit code %d: %s",
+                    String.join(" ", command),
+                    directory.getAbsolutePath(),
+                    exitCode,
+                    error
+                    );
 
-                throw new GitProcessException(message);
+                    throw new GitProcessException(message);
             }
-
-            return IOUtils.toString(process.getInputStream()).replaceAll("\\s++$", "");
+            
+            return readStream(process.getInputStream()).replaceAll("\\s++$", "");
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new GitProcessException(e);
         }
     }
+    
+    private String readStream(InputStream inputStream) throws IOException {
+        return IOUtils.toString(inputStream, StandardCharsets.UTF_8).trim();
+    }
 
     private List<String> parseLocalBranches(String gitOutput) {
         String[] lines = gitOutput.split("\n");
         return Arrays.asList(lines)
-                .stream()
-                .map(branch -> branch.replaceFirst("^\\*", "").trim())
-                .filter(branch -> !branch.isEmpty())
-                .sorted()
+        .stream()
+        .map(branch -> branch.replaceFirst("^\\*", "").trim())
+        .filter(branch -> !branch.isEmpty())
+        .sorted()
                 .collect(Collectors.toList());
     }
 
