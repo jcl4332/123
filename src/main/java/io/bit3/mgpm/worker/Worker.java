@@ -607,7 +607,7 @@ public class Worker implements Runnable {
                 throw new GitProcessException(message);
             }
 
-            return IOUtils.toString(process.getInputStream()).replaceAll("\\s+$", "");
+            return IOUtils.toString(process.getInputStream()).replaceAll("\\s++$", "");
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new GitProcessException(e);

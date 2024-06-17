@@ -55,7 +55,7 @@ public class ArgsLoader {
 
       if (cmd.hasOption(OptionsFactory.THREADS_OPT)) {
         String value = cmd.getOptionValue(OptionsFactory.THREADS_OPT);
-        if (!value.matches("\\d*[1-9]\\d*")) {
+        if (!value.matches("\\d*[1-9]\\d*+")) {
           System.err.println("Option --threads must be a positive number, skipping.");
         } else {
           args.setThreads(Integer.parseInt(value));
