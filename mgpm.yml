@@ -1,0 +1,11 @@
+repositories:
+  -
+    # generic git repository (example)
+    type: git
+    name: CalidadG5 # name of the directory
+    url: https://github.com/jorge1380/CalidadG5.git
+  -
+    # generic git repository (example)
+    type: git
+    name: RollingLegends # name of the directory
+    url: https://github.com/SaraTuset/RollingLegends.git
